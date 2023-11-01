@@ -46,6 +46,7 @@ class _LocationInputState extends State<LocationInput> {
     setState(() {
       _isGettingLocation = false;
     });
+    print("${locationData.latitude},${locationData.latitude}");
     widget.onCurrentLocation(locationData);
   }
 
