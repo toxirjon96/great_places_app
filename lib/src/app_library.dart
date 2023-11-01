@@ -6,6 +6,7 @@ export 'package:flutter/material.dart';
 export 'package:google_fonts/google_fonts.dart';
 export 'package:flutter_riverpod/flutter_riverpod.dart';
 export 'package:image_picker/image_picker.dart';
+export 'package:location/location.dart';
 
 //constants
 export 'package:favourite_places_app/src/constants/theme_config.dart';

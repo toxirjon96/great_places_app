@@ -1,13 +1,54 @@
 import 'package:favourite_places_app/src/app_library.dart';
 
 class LocationInput extends StatefulWidget {
-  const LocationInput({super.key});
+  const LocationInput({
+    required this.onCurrentLocation,
+    super.key,
+  });
+
+  final void Function(LocationData locationData) onCurrentLocation;
 
   @override
   State<StatefulWidget> createState() => _LocationInputState();
 }
 
 class _LocationInputState extends State<LocationInput> {
+  LocationData? _pickedLocation;
+  bool _isGettingLocation = false;
+
+  void _getCurrentLocation() async {
+    Location location = Location();
+
+    bool serviceEnabled;
+    PermissionStatus permissionGranted;
+    LocationData locationData;
+
+    serviceEnabled = await location.serviceEnabled();
+    if (!serviceEnabled) {
+      serviceEnabled = await location.requestService();
+      if (!serviceEnabled) {
+        return;
+      }
+    }
+
+    permissionGranted = await location.hasPermission();
+    if (permissionGranted == PermissionStatus.denied) {
+      permissionGranted = await location.requestPermission();
+      if (permissionGranted != PermissionStatus.granted) {
+        return;
+      }
+    }
+    setState(() {
+      _isGettingLocation = true;
+    });
+
+    locationData = await location.getLocation();
+    setState(() {
+      _isGettingLocation = false;
+    });
+    widget.onCurrentLocation(locationData);
+  }
+
   @override
   Widget build(BuildContext context) {
     Widget content = Text(
@@ -17,6 +58,13 @@ class _LocationInputState extends State<LocationInput> {
             color: Theme.of(context).colorScheme.primary,
           ),
     );
+    if (_isGettingLocation) {
+      content = Center(
+        child: CircularProgressIndicator(
+          color: Theme.of(context).colorScheme.primary,
+        ),
+      );
+    }
     return Column(
       children: [
         Container(
@@ -34,7 +82,7 @@ class _LocationInputState extends State<LocationInput> {
         Row(
           children: [
             TextButton.icon(
-              onPressed: () {},
+              onPressed: _getCurrentLocation,
               icon: const Icon(Icons.location_on),
               label: const Text("Get Current Location"),
             ),
