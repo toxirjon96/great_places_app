@@ -8,15 +8,17 @@ class AddItem extends ConsumerStatefulWidget {
 }
 
 class _AddItemState extends ConsumerState<AddItem> {
-  final TextEditingController controller = TextEditingController();
+  final TextEditingController _controller = TextEditingController();
+  File? _imageFile;
 
   void _saveItem() {
-    String name = controller.text;
+    String name = _controller.text;
 
-    if (name.isNotEmpty) {
+    if (name.isNotEmpty && _imageFile != null) {
       ref.read(placeProvider.notifier).addItem(
             PlacesModel(
               name: name,
+              image: _imageFile!,
             ),
           );
       Navigator.of(context).pop();
@@ -27,7 +29,7 @@ class _AddItemState extends ConsumerState<AddItem> {
 
   @override
   void dispose() {
-    controller.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
@@ -45,7 +47,7 @@ class _AddItemState extends ConsumerState<AddItem> {
         child: Column(
           children: [
             TextField(
-              controller: controller,
+              controller: _controller,
               maxLength: 50,
               decoration: InputDecoration(
                 label: Text(
@@ -60,6 +62,14 @@ class _AddItemState extends ConsumerState<AddItem> {
                 color: Theme.of(context).colorScheme.onSecondaryContainer,
               ),
             ),
+            const SizedBox(height: 20),
+            ImageInput(
+              onPickImage: (image) {
+                _imageFile = image;
+              },
+            ),
+            const SizedBox(height: 20),
+            const LocationInput(),
             const SizedBox(height: 20),
             OutlinedButton.icon(
               onPressed: _saveItem,

@@ -16,34 +16,41 @@ class HomePage extends ConsumerWidget {
       ),
     );
     if (places.isNotEmpty) {
-      content = ListView.builder(
-        itemCount: places.length,
-        itemBuilder: (ctx, index) {
-          return Dismissible(
-            onDismissed: (value) {
-              ref.read(placeProvider.notifier).removeItem(places[index]);
-            },
-            key: Key(places[index].id),
-            child: GestureDetector(
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (ctx) => SinglePlacePage(place: places[index]),
-                  ),
-                );
+      content = Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ListView.builder(
+          itemCount: places.length,
+          itemBuilder: (ctx, index) {
+            return Dismissible(
+              onDismissed: (value) {
+                ref.read(placeProvider.notifier).removeItem(places[index]);
               },
-              child: ListTile(
-                title: Text(
-                  places[index].name,
-                  style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                        color:
-                            Theme.of(context).colorScheme.onSecondaryContainer,
-                      ),
+              key: Key(places[index].id),
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (ctx) => SinglePlacePage(place: places[index]),
+                    ),
+                  );
+                },
+                child: ListTile(
+                  leading: CircleAvatar(
+                    radius: 26,
+                    backgroundImage: FileImage(places[index].image),
+                  ),
+                  title: Text(
+                    places[index].name,
+                    style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                          color:
+                              Theme.of(context).colorScheme.onSecondaryContainer,
+                        ),
+                  ),
                 ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       );
     }
 
