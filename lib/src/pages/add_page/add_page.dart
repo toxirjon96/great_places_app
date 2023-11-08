@@ -38,6 +38,7 @@ class _AddItemState extends ConsumerState<AddItem> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: const Text("Add New Place"),
       ),
