@@ -1,12 +1,12 @@
+import 'dart:convert';
+
 import 'package:favourite_places_app/src/app_library.dart';
+import 'package:http/http.dart';
 
 class LocationInput extends StatefulWidget {
   const LocationInput({
-    required this.onCurrentLocation,
     super.key,
   });
-
-  final void Function(LocationData locationData) onCurrentLocation;
 
   @override
   State<StatefulWidget> createState() => _LocationInputState();
@@ -46,7 +46,19 @@ class _LocationInputState extends State<LocationInput> {
       _isGettingLocation = false;
     });
     print("${locationData.latitude},${locationData.latitude}");
-    widget.onCurrentLocation(locationData);
+    final long = locationData.longitude;
+    final lat = locationData.latitude;
+
+    final url = Uri.parse(
+        "https://maps.googleapis.com/maps/api/geocode/json?latlng=$lat,$long&key=AIzaSyAMUS_eH_E0_qPzIuweJL_NWuRKoI8lj0w");
+    final response = await get(url);
+    print(response);
+    if (response.statusCode>= 200 && response.statusCode < 300){
+      final resData = jsonDecode(response.body);
+      final formattedAddress = resData["results"][0]['formatted_address'];
+      print(formattedAddress);
+    }
+    
   }
 
   @override
