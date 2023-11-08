@@ -1,12 +1,12 @@
-import 'dart:convert';
-
 import 'package:favourite_places_app/src/app_library.dart';
-import 'package:http/http.dart';
 
 class LocationInput extends StatefulWidget {
   const LocationInput({
+    required this.onChooseLocation,
     super.key,
   });
+
+  final void Function(PlaceLocation location) onChooseLocation;
 
   @override
   State<StatefulWidget> createState() => _LocationInputState();
@@ -14,6 +14,17 @@ class LocationInput extends StatefulWidget {
 
 class _LocationInputState extends State<LocationInput> {
   bool _isGettingLocation = false;
+  PlaceLocation? _locationModel;
+
+  String get locationImage {
+    if (_locationModel == null) {
+      return '';
+    }
+
+    final long = _locationModel!.longitude;
+    final lat = _locationModel!.latitude;
+    return "https://maps.googleapis.com/maps/api/staticmap?center$lat,$long&zoom=16&size=600x300&maptype=roadmap&markers=color:red%7Clabel:A%7C$lat,$long&key=AIzaSyAMUS_eH_E0_qPzIuweJL_NWuRKoI8lj0w";
+  }
 
   void _getCurrentLocation() async {
     Location location = Location();
@@ -42,23 +53,33 @@ class _LocationInputState extends State<LocationInput> {
     });
 
     locationData = await location.getLocation();
-    setState(() {
-      _isGettingLocation = false;
-    });
-    print("${locationData.latitude},${locationData.latitude}");
+
     final long = locationData.longitude;
     final lat = locationData.latitude;
+
+    if (long == null || lat == null) return;
 
     final url = Uri.parse(
         "https://maps.googleapis.com/maps/api/geocode/json?latlng=$lat,$long&key=AIzaSyAMUS_eH_E0_qPzIuweJL_NWuRKoI8lj0w");
     final response = await get(url);
-    print(response);
-    if (response.statusCode>= 200 && response.statusCode < 300){
+    if (response.statusCode >= 200 && response.statusCode < 300) {
       final resData = jsonDecode(response.body);
       final formattedAddress = resData["results"][0]['formatted_address'];
-      print(formattedAddress);
+      setState(() {
+        _locationModel = PlaceLocation(
+          longitude: long,
+          latitude: lat,
+          address: formattedAddress,
+        );
+        widget.onChooseLocation(_locationModel!);
+        _isGettingLocation = false;
+      });
+    }else{
+      setState(() {
+        _isGettingLocation = false;
+      });
     }
-    
+
   }
 
   @override
@@ -70,6 +91,14 @@ class _LocationInputState extends State<LocationInput> {
             color: Theme.of(context).colorScheme.primary,
           ),
     );
+    if (_locationModel != null) {
+      content = Image.network(
+        locationImage,
+        fit: BoxFit.cover,
+        width: double.infinity,
+        height: double.infinity,
+      );
+    }
     if (_isGettingLocation) {
       content = Center(
         child: CircularProgressIndicator(

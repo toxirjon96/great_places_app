@@ -39,6 +39,13 @@ class HomePage extends ConsumerWidget {
                     radius: 26,
                     backgroundImage: FileImage(places[index].image),
                   ),
+                  subtitle: Text(
+                    places[index].location.address,
+                    style: Theme.of(context).textTheme.labelMedium!.copyWith(
+                      color:
+                      Theme.of(context).colorScheme.onSecondaryContainer,
+                    ),
+                  ),
                   title: Text(
                     places[index].name,
                     style: Theme.of(context).textTheme.titleLarge!.copyWith(

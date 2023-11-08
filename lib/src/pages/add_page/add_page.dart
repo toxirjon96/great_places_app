@@ -10,15 +10,17 @@ class AddItem extends ConsumerStatefulWidget {
 class _AddItemState extends ConsumerState<AddItem> {
   final TextEditingController _controller = TextEditingController();
   File? _imageFile;
+  PlaceLocation? _location;
 
   void _saveItem() {
     String name = _controller.text;
 
-    if (name.isNotEmpty && _imageFile != null) {
+    if (name.isNotEmpty && _imageFile != null && _location != null) {
       ref.read(placeProvider.notifier).addItem(
             PlacesModel(
               name: name,
               image: _imageFile!,
+              location: _location!,
             ),
           );
       Navigator.of(context).pop();
@@ -70,7 +72,10 @@ class _AddItemState extends ConsumerState<AddItem> {
               },
             ),
             const SizedBox(height: 20),
-            const LocationInput(
+            LocationInput(
+              onChooseLocation: (location) {
+                _location = location;
+              },
             ),
             const SizedBox(height: 20),
             OutlinedButton.icon(

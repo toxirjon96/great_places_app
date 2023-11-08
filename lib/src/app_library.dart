@@ -2,6 +2,8 @@ library app_library;
 
 //core
 export 'dart:io';
+export 'dart:convert';
+export 'package:http/http.dart';
 export 'package:flutter/material.dart';
 export 'package:google_fonts/google_fonts.dart';
 export 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -20,6 +22,7 @@ export 'package:favourite_places_app/src/pages/add_page/widget/location_input.da
 
 //models
 export 'package:favourite_places_app/src/models/places_model.dart';
+export 'package:favourite_places_app/src/models/place_location.dart';
 
 //provider
 export 'package:favourite_places_app/src/provider/place_state_notifier.dart';
