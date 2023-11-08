@@ -17,11 +17,9 @@ class _AddItemState extends ConsumerState<AddItem> {
 
     if (name.isNotEmpty && _imageFile != null && _location != null) {
       ref.read(placeProvider.notifier).addItem(
-            PlacesModel(
-              name: name,
-              image: _imageFile!,
-              location: _location!,
-            ),
+            name,
+            _imageFile!,
+            _location!,
           );
       Navigator.of(context).pop();
     } else {

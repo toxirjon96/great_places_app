@@ -10,7 +10,8 @@ class PlacesModel {
     required this.name,
     required this.image,
     required this.location,
-  }) : id = IdGenerator.uid.v4();
+    String? id,
+  }) : id = id ?? IdGenerator.uid.v4();
 
 
   @override
