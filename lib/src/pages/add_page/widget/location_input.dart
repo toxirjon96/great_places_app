@@ -26,6 +26,42 @@ class _LocationInputState extends State<LocationInput> {
     return "https://maps.googleapis.com/maps/api/staticmap?center$lat,$long&zoom=16&size=600x300&maptype=roadmap&markers=color:red%7Clabel:A%7C$lat,$long&key=AIzaSyAMUS_eH_E0_qPzIuweJL_NWuRKoI8lj0w";
   }
 
+  Future<void> _selectOnMap() async {
+    final position = await Navigator.of(context).push<LatLng?>(
+      MaterialPageRoute(
+        builder: (ctx) => const MapScreen(),
+      ),
+    );
+    if (position == null) return;
+    _savePlace(
+      position.latitude,
+      position.longitude,
+    );
+  }
+
+  void _savePlace(double latitude, double longitude) async {
+    final url = Uri.parse(
+        "https://maps.googleapis.com/maps/api/geocode/json?latlng=$latitude,$longitude&key=AIzaSyAMUS_eH_E0_qPzIuweJL_NWuRKoI8lj0w");
+    final response = await get(url);
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      final resData = jsonDecode(response.body);
+      final formattedAddress = resData["results"][0]['formatted_address'];
+      setState(() {
+        _locationModel = PlaceLocation(
+          longitude: longitude,
+          latitude: latitude,
+          address: formattedAddress,
+        );
+        _isGettingLocation = false;
+      });
+      widget.onChooseLocation(_locationModel!);
+    } else {
+      setState(() {
+        _isGettingLocation = false;
+      });
+    }
+  }
+
   void _getCurrentLocation() async {
     Location location = Location();
 
@@ -58,28 +94,7 @@ class _LocationInputState extends State<LocationInput> {
     final lat = locationData.latitude;
 
     if (long == null || lat == null) return;
-
-    final url = Uri.parse(
-        "https://maps.googleapis.com/maps/api/geocode/json?latlng=$lat,$long&key=AIzaSyAMUS_eH_E0_qPzIuweJL_NWuRKoI8lj0w");
-    final response = await get(url);
-    if (response.statusCode >= 200 && response.statusCode < 300) {
-      final resData = jsonDecode(response.body);
-      final formattedAddress = resData["results"][0]['formatted_address'];
-      setState(() {
-        _locationModel = PlaceLocation(
-          longitude: long,
-          latitude: lat,
-          address: formattedAddress,
-        );
-        widget.onChooseLocation(_locationModel!);
-        _isGettingLocation = false;
-      });
-    }else{
-      setState(() {
-        _isGettingLocation = false;
-      });
-    }
-
+    _savePlace(lat, long);
   }
 
   @override
@@ -129,7 +144,7 @@ class _LocationInputState extends State<LocationInput> {
             ),
             const SizedBox(width: 10),
             TextButton.icon(
-              onPressed: () {},
+              onPressed: _selectOnMap,
               icon: const Icon(Icons.map),
               label: const Text("Choose location"),
             ),
