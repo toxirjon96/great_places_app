@@ -4,8 +4,8 @@ class MapScreen extends StatefulWidget {
   const MapScreen({
     super.key,
     this.location = const PlaceLocation(
-      longitude: 37.422,
-      latitude: -122.084,
+      longitude: 69.2251196,
+      latitude: 41.3280898,
       address: '',
     ),
     this.isSelecting = true,
